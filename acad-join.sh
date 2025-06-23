@@ -2,10 +2,6 @@
 echo "Instalando pacotes necessários..."
 sudo apt-get -y install realmd libnss-sss libpam-sss sssd sssd-tools adcli samba-common-bin oddjob oddjob-mkhomedir packagekit -y >/dev/null
 clear
-echo "Instalação de pacotes necessários concluída. Agora, imprimindo realms Kerberos descobertos..."
-realm discover
-
-echo "Seu domínio e suas propriedades devem ser impressos acima. Se não forem, verifique a configuração do DNS."
 REALMAD=acad.pp.ifms.edu.br
 REALMDC=acad
 
