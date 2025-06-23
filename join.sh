@@ -16,6 +16,21 @@ if [ -z "$NEWHOST" ]; then
 fi
 shorthost=${HOSTNAME%%.*}
 
+if [ "$NEWHOST" != "$shorthost" ]; then
+    echo "Setting hostname to $NEWHOST"
+    sudo hostnamectl set-hostname "$NEWHOST"
+else
+    echo "Hostname is already set to $NEWHOST"
+fi
+
+# Set the hostname in /etc/hosts
+echo "Setting hostname in /etc/hosts"
+sudo sed -i "s/^127\.0\.1\.1.*/127.0
+.1.1 $NEWHOST $NEWHOST.$REALMAD/" /etc/hosts
+# Set the hostname in /etc/hostname
+echo "Setting hostname in /etc/hostname"
+echo "$NEWHOST" | sudo tee /etc/hostname
+
 mkdir /etc/univention
 echo "Connecting to "$REALMDC.$REALMAD" UCS server and pulling UCS config. Password for domain admin will be prompted."
 ssh -n root@$REALMDC.$REALMAD 'ucr shell | grep -v ^hostname=' >/etc/univention/ucr_master
