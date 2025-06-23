@@ -69,14 +69,17 @@ Session:
 sudo pam-auth-update --enable mkhomedir
 sudo systemctl restart sssd
 
-# Make the login screen not require @domain
-echo "Setting login screen to not require @domain..."
-sudo sed -i 's/^#domain_suffix = .*/domain_suffix = '"$REALMAD"'/' /etc/sssd/sssd.conf
-sudo sed -i 's/^#use_fully_qualified_names = True/use_fully_qualified_names = False/' /etc/sssd/sssd.conf
-sudo sed -i 's/^#fallback_homedir = \/home\/%d\/%u/fallback_homedir = \/home\/%u/' /etc/sssd/sssd.conf
-sudo sed -i 's/^#default_shell = \/bin\/bash/default_shell = \/bin\/bash/' /etc/sssd/sssd.conf
+# Do not require users to type @$REALMAD when logging in
+echo "Configuring SSSD to not require domain suffix..."
+sudo sed -i 's/^use_fully_qualified_names = True/use_fully_qualified_names = False/' /etc/sssd/sssd.conf
+sudo sed -i 's/^fallback_homedir = \/home\/%u/fallback_homedir = \/home\/%u@'$REALMAD'/' /etc/sssd/sssd.conf
 sudo chmod 600 /etc/sssd/sssd.conf
 sudo systemctl restart sssd
+
+# Make admins group members sudoers
+echo "Adding domain admins group to sudoers..."
+echo "%Domain\ Admins ALL=(ALL) ALL" | sudo tee /etc/sudoers.d/99_domain_admins
+sudo chmod 440 /etc/sudoers.d/99_domain_admins
 
 #prompt
 read -r -p "UCS Domain Join Complete! REBOOT NOW? [y/N] " rebootnow
