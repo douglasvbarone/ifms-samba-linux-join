@@ -1,6 +1,6 @@
 #!/bin/bash
 echo "Installing necessary packages..."
-sudo apt -y install realmd libnss-sss libpam-sss sssd sssd-tools adcli samba-common-bin oddjob oddjob-mkhomedir packagekit -y
+sudo apt -y install realmd libnss-sss libpam-sss sssd sssd-tools adcli samba-common-bin oddjob oddjob-mkhomedir packagekit -y >/dev/null
 clear
 echo "Completed installation of necessary packages. Now printing discovered Kerberos realms..."
 realm discover
