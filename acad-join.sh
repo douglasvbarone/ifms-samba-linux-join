@@ -2,6 +2,7 @@
 echo "Instalando pacotes necessários..."
 sudo apt-get -y install realmd libnss-sss libpam-sss sssd sssd-tools adcli samba-common-bin oddjob oddjob-mkhomedir packagekit -y >/dev/null
 clear
+
 REALMAD=acad.pp.ifms.edu.br
 REALMDC=acad
 
@@ -10,7 +11,6 @@ DEFAULTNEWHOST="PP-$(tr -dc A-Za-z0-9 </dev/urandom | head -c6)"
 read -p "Qual é o novo nome do host? (Ex.: PP-000123) (padrão: $DEFAULTNEWHOST) " NEWHOST
 
 if [ -z "$NEWHOST" ]; then
-    # Generate a random hostname if none is provided
     NEWHOST="$DEFAULTNEWHOST"
 fi
 
