@@ -33,25 +33,6 @@ sudo sed -i "s/^127\.0\.1\.1.*/127.0
 echo "Definindo o nome do host em /etc/hostname"
 echo "$NEWHOST" | sudo tee /etc/hostname
 
-mkdir /etc/univention
-echo "Conectando-se ao servidor UCS "$REALMDC.$REALMAD" e baixando a configuração do UCS. A senha do administrador do domínio será solicitada."
-ssh -n root@$REALMDC.$REALMAD 'ucr shell | grep -v ^hostname=' >/etc/univention/ucr_master
-echo "master_ip="$REALMDC.$REALMAD"" >>/etc/univention/ucr_master
-chmod 660 /etc/univention/ucr_master
-
-. /etc/univention/ucr_master
-
-# Create an account and save the password
-echo "Criando conta de computador no servidor UCS "$REALMDC.$REALMAD". A senha do administrador do domínio será solicitada."
-password="$(tr -dc A-Za-z0-9_ </dev/urandom | head -c20)"
-ssh -n root@$REALMDC.$REALMAD udm computers/linux create \
-    --position "cn=computers,${ldap_base}" \
-    --set name=$(hostname) --set password="${password}" \
-    --set operatingSystem="$(lsb_release -is)" \
-    --set operatingSystemVersion="$(lsb_release -rs)"
-printf '%s' "$password" >/etc/ldap.secret
-chmod 0400 /etc/ldap.secret
-
 echo "Executando a operação de ingresso no domínio. A senha do administrador do domínio será solicitada."
 sudo realm join -v -U "$REALMADMIN" "$REALMAD"
 
