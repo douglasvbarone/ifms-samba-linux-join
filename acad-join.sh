@@ -1,14 +1,14 @@
 #!/bin/bash
-echo "Instalando pacotes necessários..."
+echo "Instalando pacotes necessários... Aguarde."
 sudo apt-get -y install realmd libnss-sss libpam-sss sssd sssd-tools adcli samba-common-bin oddjob oddjob-mkhomedir packagekit -y >/dev/null
 clear
 
 REALMAD=acad.pp.ifms.edu.br
 REALMDC=acad
 
-DEFAULTNEWHOST="PP-$(tr -dc A-Za-z0-9 </dev/urandom | head -c6)"
+DEFAULTNEWHOST="PP-$(tr -dc A-Za-z0-9 </dev/urandom | head -c8)"
 
-read -p "Qual é o novo nome do host? (Ex.: PP-000123) (padrão: $DEFAULTNEWHOST) " NEWHOST
+read -p "Qual é o novo nome do host? (Ex.: PP-01234567) (padrão: $DEFAULTNEWHOST) " NEWHOST
 
 if [ -z "$NEWHOST" ]; then
     NEWHOST="$DEFAULTNEWHOST"
@@ -25,12 +25,8 @@ fi
 
 read -p "Qual é o nome de usuário do administrador do domínio? " REALMADMIN
 
-# Set the hostname in /etc/hosts
-echo "Definindo o nome do host em /etc/hosts"
-sudo sed -i "s/^127\.0\.1\.1.*/127.0
-.1.1 $NEWHOST $NEWHOST.$REALMAD/" /etc/hosts
-# Set the hostname in /etc/hostname
-echo "Definindo o nome do host em /etc/hostname"
+# Set the hostname
+sudo sed -i "s/^127\.0\.1\.1.*/127.0.1.1 $NEWHOST $NEWHOST.$REALMAD/" /etc/hosts
 echo "$NEWHOST" | sudo tee /etc/hostname
 
 echo "Executando a operação de ingresso no domínio. A senha do administrador do domínio será solicitada."
@@ -52,7 +48,7 @@ sudo pam-auth-update --enable mkhomedir
 sudo systemctl restart sssd
 
 # Do not require users to type @$REALMAD when logging in
-echo "Configurando o SSSD para não exigir o sufixo de domínio..."
+
 sudo sed -i 's/^use_fully_qualified_names = True/use_fully_qualified_names = False/' /etc/sssd/sssd.conf
 #sudo sed -i 's/^fallback_homedir = \/home\/%u/fallback_homedir = \/home\/%u@'$REALMAD'/' /etc/sssd/sssd.conf
 sudo chmod 600 /etc/sssd/sssd.conf
@@ -68,6 +64,4 @@ read -r -p "Ingresso no Domínio Concluído! REINICIAR AGORA? [s/N] " rebootnow
 if [[ "$rebootnow" =~ ^([sS][iI][mM]|[sS])+$ ]]; then
     echo "Reiniciando!"
     sudo reboot
-else
-    read -p "Reinicialização não selecionada. Pressione qualquer tecla para finalizar o script."
 fi
