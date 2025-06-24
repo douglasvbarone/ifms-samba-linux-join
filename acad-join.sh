@@ -57,8 +57,7 @@ sudo realm join -v -U "$REALMADMIN" "$REALMAD"
 
 # Create ldap.conf
 sudo rm /etc/ldap/ldap.conf
-echo 'TLS_CACERT /etc/univention/ssl/ucsCA/CAcert.pem
-URI ldap://$ldap_master:7389
+echo 'URI ldap://$ldap_master:7389
 BASE $ldap_base' | sudo tee /etc/ldap/ldap.conf
 
 echo "Ativando o módulo mkhomedir..."
