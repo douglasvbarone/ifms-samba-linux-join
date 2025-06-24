@@ -64,7 +64,7 @@ echo "%Domain\ Admins ALL=(ALL) ALL" | sudo tee /etc/sudoers.d/99_domain_admins
 sudo chmod 440 /etc/sudoers.d/99_domain_admins
 
 #prompt
-read -r -p "Ingresso no Domínio UCS Concluído! REINICIAR AGORA? [s/N] " rebootnow
+read -r -p "Ingresso no Domínio Concluído! REINICIAR AGORA? [s/N] " rebootnow
 if [[ "$rebootnow" =~ ^([sS][iI][mM]|[sS])+$ ]]; then
     echo "Reiniciando!"
     sudo reboot
